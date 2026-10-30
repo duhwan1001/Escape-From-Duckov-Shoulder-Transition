@@ -31,13 +31,16 @@
 [list]
 [*][b]Left Alt[/b] — 왼손 ↔ 오른손 전환 (설정에서 변경 가능)
 [*]Model ↔ Socket 전환 — 기본 미할당. 설정 창의 Mode 드롭다운으로 바꾸거나 원하는 키를 지정
+[*]LeftRight 키 모드 — 설정의 Key mode를 LeftRight로 바꾸면 Q = 왼손, E = 오른손 (키 변경 가능). Q는 게임의 근접무기 단축키와 겹치니 참고
 [/list]
 
 [h2]옵션[/h2] (설정 창 또는 config.json, 자동 동기화)
 [list]
 [*]mirror (true) — 왼손 사격 켜기/끄기
 [*]mode (Model) — Model 오리 전체 거울상 / Socket 총만
+[*]keyMode (Toggle) — Toggle / LeftRight
 [*]toggleKey (LeftAlt) — 전환 키, Unity KeyCode 이름
+[*]leftKey (Q), rightKey (E) — LeftRight 모드의 왼손/오른손 키
 [*]modeKey (None) — Model/Socket 전환 핫키(선택)
 [*]toggleSound (GunReload) — 전환 효과음: GunReload 든 총의 장전 철컥 / GunUnload 탄창 빼기 / EquipGunLight·EquipGunHeavy 총 장비 슥슥 / EquipDefault 장비 착용 슥슥 / UiClick / None. 모두 게임 내장 사운드.
 [*]coopSync (true) — 코옵 동기화
@@ -89,13 +92,16 @@ Subscribe → launch → enable in Mods on the main menu → restart. No require
 [list]
 [*][b]Left Alt[/b] — toggle left ↔ right (rebindable)
 [*]Model ↔ Socket — unassigned by default; use the Mode dropdown in settings or assign a key
+[*]LeftRight key mode — set Key mode to LeftRight in settings: Q = left hand, E = right hand (rebindable). Note Q is also the game's melee shortcut
 [/list]
 
 [h2]Options[/h2] (settings page or config.json, kept in sync)
 [list]
 [*]mirror (true) — left-handed on/off
 [*]mode (Model) — Model whole duck mirrored / Socket weapon only
+[*]keyMode (Toggle) — Toggle / LeftRight
 [*]toggleKey (LeftAlt) — toggle key, Unity KeyCode name
+[*]leftKey (Q), rightKey (E) — left/right keys for LeftRight mode
 [*]modeKey (None) — optional hotkey to flip Model/Socket
 [*]toggleSound (GunReload) — GunReload held gun's reload click / GunUnload magazine-out / EquipGunLight·EquipGunHeavy gun equip swoosh / EquipDefault gear swoosh / UiClick / None. All built-in game sounds.
 [*]coopSync (true) — co-op sync
@@ -128,6 +134,9 @@ Built and tested on game 2.3.30. Compatible with HarmonyLib (workshop). SlimeNul
 ## Change Notes (v0.1.0)
 
 ```
+v0.1.1
+- New key mode LeftRight: Q = left hand, E = right hand (Options > Key mode)
+
 v0.1.0
 - Left-handed duck: gun, muzzle and bullet spawn mirrored to the left (Model / Socket modes)
 - Left Alt toggle with selectable built-in sound; optional mode-switch hotkey

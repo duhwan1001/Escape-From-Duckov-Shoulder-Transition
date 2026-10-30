@@ -23,6 +23,7 @@ Shoulder Transition
 - 조작
 Left Alt : 왼손 ↔ 오른손 전환, 설정에서 변경 가능
 기본 미할당 : Model ↔ Socket 전환, 설정 창의 Mode 드롭다운으로 바꾸거나 원하는 키를 지정
+LeftRight 키 모드 : 설정의 Key mode를 LeftRight로 바꾸면 Q = 왼손, E = 오른손 (키 변경 가능, 토글 키도 계속 동작). Q는 게임의 근접무기 단축키와 겹치니 참고
 
 - 전환 효과음
 GunReload : 장착하고 있는 총기의 장전 소리
@@ -70,6 +71,7 @@ The other player must have this mod, and the host must have it as well to relay 
 - Controls
 Left Alt: Toggle left ↔ right hand (rebindable in settings)
 Unassigned by default: Toggle Model ↔ Socket; change it via the Mode dropdown in the settings window, or bind a key of your choice
+LeftRight key mode: set Key mode to LeftRight in the settings → Q = left hand, E = right hand (rebindable; the toggle key keeps working). Note that Q is also the game's melee shortcut
 
 - Switch sound effects
 GunReload: Reload sound of the equipped gun

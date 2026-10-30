@@ -13,6 +13,9 @@ namespace ShoulderTransition
 {
     public enum MirrorMode { Model, Socket }
 
+    /// <summary>Toggle: 토글 키 하나로 전환 / LeftRight: 왼손 키·오른손 키를 따로 (토글 키도 계속 동작)</summary>
+    public enum KeyMode { Toggle, LeftRight }
+
     /// <summary>
     /// 토글 효과음 (모두 게임 내장 FMOD 이벤트 재활용, F11 덤프로 확인한 경로)
     ///   GunReload    : SFX/Combat/Gun/Reload/{든 총의 reloadKey}_end  — 장전 마무리 철컥 (총기별로 다름)
@@ -51,8 +54,19 @@ namespace ShoulderTransition
             public MirrorMode mode = MirrorMode.Model;
 
             [Header("Keys / 키")]
+            [InspectorName("Key mode (키 방식)")]
+            [Tooltip("Toggle: one key flips left/right. LeftRight: separate keys set left and right (toggle key still works).\nToggle: 토글 키 하나로 전환. LeftRight: 왼손 키 / 오른손 키를 따로 사용(토글 키도 계속 동작).")]
+            public KeyMode keyMode = KeyMode.Toggle;
+
             [InspectorName("Toggle key (토글 키)")]
             public KeyCode toggleKey = KeyCode.LeftAlt;
+
+            [InspectorName("Left-hand key (왼손 키, LeftRight 모드)")]
+            [Tooltip("Note: Q is also the game's melee shortcut. / 참고: Q는 게임의 근접무기 단축키이기도 합니다.")]
+            public KeyCode leftKey = KeyCode.Q;
+
+            [InspectorName("Right-hand key (오른손 키, LeftRight 모드)")]
+            public KeyCode rightKey = KeyCode.E;
 
             [InspectorName("Mode switch key (모드 전환 키, 기본 없음)")]
             [Tooltip("Optional hotkey to flip Model/Socket. Leave None and use the Mode dropdown instead.\n선택 핫키. None이면 비활성, 모드는 위 드롭다운으로 변경.")]
@@ -125,7 +139,8 @@ namespace ShoulderTransition
             LoadConfig();
             _applied = config.Clone();
             Log("v" + typeof(ModBehaviour).Assembly.GetName().Version + " loaded. mirror=" + config.mirror + " mode=" + config.mode +
-                " toggleKey=" + config.toggleKey + " modeKey=" + config.modeKey + " sound=" + config.toggleSound +
+                " keyMode=" + config.keyMode + " toggleKey=" + config.toggleKey + " left/right=" + config.leftKey + "/" + config.rightKey +
+                " modeKey=" + config.modeKey + " sound=" + config.toggleSound +
                 " | game " + Application.version + " unity " + Application.unityVersion);
             ItemAgent_Gun.OnMainCharacterShootEvent += OnMainCharacterShoot;
             SocketMirrorPatch.LocalWantsPatch = () => config.mode == MirrorMode.Socket;
@@ -184,6 +199,11 @@ namespace ShoulderTransition
         {
             // 핫키는 설정값만 바꾼다. 실제 반영은 아래 DetectConfigChanges 에서 (설정 UI에서 바꿔도 같은 경로).
             if (KeyDown(config.toggleKey)) config.mirror = !config.mirror;
+            if (config.keyMode == KeyMode.LeftRight)
+            {
+                if (KeyDown(config.leftKey)) config.mirror = true;
+                if (KeyDown(config.rightKey)) config.mirror = false;
+            }
             if (KeyDown(config.modeKey)) config.mode = config.mode == MirrorMode.Model ? MirrorMode.Socket : MirrorMode.Model;
             if (KeyDown(config.dumpKey)) DumpHierarchy();
             if (KeyDown(config.snapKey)) Snapshot();
@@ -257,6 +277,7 @@ namespace ShoulderTransition
             if (!changed)
             {
                 changed = config.toggleKey != _applied.toggleKey || config.modeKey != _applied.modeKey ||
+                          config.keyMode != _applied.keyMode || config.leftKey != _applied.leftKey || config.rightKey != _applied.rightKey ||
                           config.toggleSound != _applied.toggleSound || config.socketMirrorMesh != _applied.socketMirrorMesh ||
                           config.socketMirrorMelee != _applied.socketMirrorMelee || config.dumpKey != _applied.dumpKey ||
                           config.snapKey != _applied.snapKey || config.fmodDumpKey != _applied.fmodDumpKey ||
