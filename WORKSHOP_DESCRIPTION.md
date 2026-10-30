@@ -2,7 +2,7 @@
 
 > 항목: https://steamcommunity.com/sharedfiles/filedetails/?id=3830017440 (ID 3830017440)
 > 내용은 README.md 와 같다. 아래 블록 전체를 Steam 페이지 설명란에 붙여 넣으면 된다(한국어 먼저, 영어 다음).
-> 소스: GitHub 링크는 저장소 생성 후 아래 `GITHUB_URL` 자리에 채울 것.
+> 소스: GitHub 링크는 저장소 생성 후 아래 `https://github.com/duhwan1001/Escape-From-Duckov-Shoulder-Transition` 자리에 채울 것.
 
 ```
 [h1]ShoulderTransition — 왼손 사격 / Left-handed Duck[/h1]
@@ -64,7 +64,7 @@
 [h2]호환성[/h2]
 게임 2.3.30 에서 제작·테스트. HarmonyLib(워크샵) 호환. SlimeNull Mod Settings · EscapeFromDuckovCoopMod 는 선택.
 
-[i]MIT 라이선스. 코드 일부는 AI(Claude) 보조로 작성했습니다. 소스: GITHUB_URL[/i]
+[i]MIT 라이선스. 코드 일부는 AI(Claude) 보조로 작성했습니다. 소스: https://github.com/duhwan1001/Escape-From-Duckov-Shoulder-Transition[/i]
 
 [hr][/hr]
 [h1]English[/h1]
@@ -122,7 +122,7 @@ Subscribe → launch → enable in Mods on the main menu → restart. No require
 [h2]Compatibility[/h2]
 Built and tested on game 2.3.30. Compatible with HarmonyLib (workshop). SlimeNull Mod Settings and EscapeFromDuckovCoopMod are optional.
 
-[i]MIT license. Part of the code was written with AI (Claude) assistance. Source: GITHUB_URL[/i]
+[i]MIT license. Part of the code was written with AI (Claude) assistance. Source: https://github.com/duhwan1001/Escape-From-Duckov-Shoulder-Transition[/i]
 ```
 
 ## Change Notes (v0.1.0)
