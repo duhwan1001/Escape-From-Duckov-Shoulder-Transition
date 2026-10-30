@@ -1,0 +1,15 @@
+# build output
+ShoulderTransition/bin/
+ShoulderTransition/obj/
+*.user
+.vs/
+
+# game save backups (personal data, never commit)
+backup_saves_*/
+
+# runtime files that may land here
+*.log
+!screenshots/coop_host_test.log
+hierarchy_dump.txt
+fmod_events.txt
+snap_*.png

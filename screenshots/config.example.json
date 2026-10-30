@@ -1,0 +1,12 @@
+{
+    "mirror": true,
+    "mode": "Model",
+    "toggleKey": "LeftAlt",
+    "modeKey": "F7",
+    "toggleSound": "GunReload",
+    "socketMirrorMesh": false,
+    "socketMirrorMelee": true,
+    "dumpKey": "F9",
+    "snapKey": "F10",
+    "fmodDumpKey": "F11"
+}

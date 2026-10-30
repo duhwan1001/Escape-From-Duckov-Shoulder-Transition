@@ -1,0 +1,18 @@
+17:44:39.084 v0.1.0.0 loaded. mirror=True mode=Model toggleKey=LeftAlt modeKey=None sound=GunReload | game 2.3.30 unity 2022.3.62f2
+17:44:39.085 coop sync hooked (channel ShoulderTransition.Hand)
+17:45:12.809 model mirror applied to '0_CharacterModel_Custom_Template(Clone)' scale=(-1.00, 1.00, 1.00) parent=ModelRoot
+17:45:35.929 coop remote 'debug' → LEFT (Model)
+17:45:35.929 remote test on 'Character(Clone)' mirror=True mode=Model
+17:45:38.777 coop remote 'debug' → RIGHT (Model)
+17:45:38.777 remote test on 'Character(Clone)' mirror=False mode=Model
+17:45:41.623 coop host → 0 client(s): table {Host:9050:L/Model} [local change]
+17:45:41.623 debug host: StartNetwork(host) → started=True isServer=True id=Host:9050
+17:45:46.703 mirror OFF
+17:45:46.705 sound 'SFX/Combat/Gun/Reload/mag_smg_end' posted, valid=True
+17:45:46.705 coop host → 0 client(s): table {Host:9050:R/Model} [local change]
+17:45:48.870 mirror ON
+17:45:48.870 sound 'SFX/Combat/Gun/Reload/mag_smg_end' posted, valid=True
+17:45:48.871 coop host → 0 client(s): table {Host:9050:L/Model} [local change]
+17:45:48.872 model mirror applied to '0_CharacterModel_Custom_Template(Clone)' scale=(-1.00, 1.00, 1.00) parent=ModelRoot
+17:45:51.804 debug host: network stopped
+17:46:14.406 coop sync unhooked

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>ShoulderTransition</AssemblyName>
+    <RootNamespace>ShoulderTransition</RootNamespace>
+    <Version>0.1.0</Version>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <!-- 게임 설치 경로 / 워크샵 HarmonyLib(3589088839) 경로 -->
+    <DuckovPath Condition="'$(DuckovPath)' == ''">E:\SteamLibrary\steamapps\common\Escape from Duckov</DuckovPath>
+    <HarmonyDir Condition="'$(HarmonyDir)' == ''">E:\SteamLibrary\steamapps\workshop\content\3167020\3589088839</HarmonyDir>
+    <ManagedDir>$(DuckovPath)\Duckov_Data\Managed</ManagedDir>
+    <!-- 워크샵 코옵 모드(3591341282) / LiteNetLib 로더(3591339491) -->
+    <CoopDir Condition="'$(CoopDir)' == ''">E:\SteamLibrary\steamapps\workshop\content\3167020\3591341282</CoopDir>
+    <LiteNetLibDir Condition="'$(LiteNetLibDir)' == ''">E:\SteamLibrary\steamapps\workshop\content\3167020\3591339491</LiteNetLibDir>
+    <!-- 빌드 결과물을 바로 게임 Mods 폴더로 복사 -->
+    <ModOutputDir>$(DuckovPath)\Duckov_Data\Mods\ShoulderTransition</ModOutputDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 게임 어셈블리 (Private=false → Mods 폴더에 복사하지 않음) -->
+    <Reference Include="$(ManagedDir)\TeamSoda.*.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\ItemStatsSystem.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.InputLegacyModule.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.JSONSerializeModule.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.ImageConversionModule.dll" Private="false" />
+    <!-- 효과음(AudioManager.Post) 및 FMOD 이벤트 덤프 -->
+    <Reference Include="$(ManagedDir)\FMODUnity.dll" Private="false" />
+    <!-- 코옵 동기화 (선택 의존성: 런타임에 코옵 모드가 없으면 CoopSync 를 건드리지 않음) -->
+    <Reference Include="$(CoopDir)\EscapeFromDuckovModApi.dll" Private="false" />
+    <Reference Include="$(CoopDir)\EscapeFromDuckovCoopMod.dll" Private="false" />
+    <Reference Include="$(LiteNetLibDir)\LiteNetLib.dll" Private="false" />
+    <!-- Harmony (socket 모드에서만 사용) -->
+    <Reference Include="$(HarmonyDir)\0Harmony.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- 빌드 후 Mods 폴더로 배포 -->
+  <Target Name="DeployToMods" AfterTargets="Build">
+    <MakeDir Directories="$(ModOutputDir)" />
+    <Copy SourceFiles="$(OutDir)ShoulderTransition.dll" DestinationFolder="$(ModOutputDir)" />
+    <Copy SourceFiles="$(HarmonyDir)\0Harmony.dll" DestinationFolder="$(ModOutputDir)" />
+    <Copy SourceFiles="..\ReleaseExample\ShoulderTransition\info.ini" DestinationFolder="$(ModOutputDir)" />
+    <Copy SourceFiles="..\ReleaseExample\ShoulderTransition\preview.png" DestinationFolder="$(ModOutputDir)" Condition="Exists('..\ReleaseExample\ShoulderTransition\preview.png')" />
+    <Message Importance="high" Text="Deployed to $(ModOutputDir)" />
+  </Target>
+
+</Project>
