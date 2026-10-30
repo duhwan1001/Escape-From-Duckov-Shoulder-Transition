@@ -210,10 +210,19 @@ namespace ShoulderTransition
             try
             {
                 var svc = NetService.Instance;
-                if (svc == null || !svc.IsServer) return;
-                // 새로 들어온 클라이언트에게 현재 표를 보내 준다 (그쪽 원격 캐릭터가 아직 없으면 그쪽에서 보관했다가 적용)
-                ModNetworkApi.SendToClient(peer, Channel, w => WriteTable(w), echoToServer: false);
-                ModBehaviour.Log("coop host → new peer: table " + Describe());
+                if (svc == null) return;
+                if (svc.IsServer)
+                {
+                    // 새로 들어온 클라이언트에게 현재 표를 보내 준다 (그쪽 원격 캐릭터가 아직 없으면 그쪽에서 보관했다가 적용)
+                    ModNetworkApi.SendToClient(peer, Channel, w => WriteTable(w), echoToServer: false);
+                    ModBehaviour.Log("coop host → new peer: table " + Describe());
+                }
+                else
+                {
+                    // 클라이언트: 호스트와 연결이 성립된 시점. (PlayerSpawned(isLocal) 는 연결 전에 발생해 그때 보낸 상태는 버려진다)
+                    ModBehaviour.Log("coop connected to host → sending my state");
+                    SendLocalState();
+                }
             }
             catch (Exception e) { ModBehaviour.Log("coop peer handler failed: " + e.Message); }
         }
@@ -244,29 +253,31 @@ namespace ShoulderTransition
         }
     }
 
-    /// <summary>원격 플레이어 캐릭터들의 미러 시각 상태 (Model: 스케일 반전, Socket: Harmony 패치의 Extra 집합).</summary>
+    /// <summary>
+    /// 원격 플레이어 캐릭터들의 미러 시각 상태.
+    /// 원격은 항상 모델 전체 스케일 반전(Model 방식)으로만 표시한다 — 상대가 Socket 방식이어도 마찬가지.
+    /// (받는 쪽에서 Harmony 패치를 거는 경로를 없애 위험을 줄이기 위함. 멀리서 보는 다른 플레이어의 얼굴 무늬 방향은 중요하지 않다.)
+    /// </summary>
     internal static class RemoteMirror
     {
         private sealed class Entry
         {
             public CharacterMainControl cmc;
             public bool mirror;
-            public MirrorMode mode;
-            public Transform scaledModel;        // Model 모드로 스케일을 뒤집어 둔 트랜스폼
-            public CharacterModel socketModel;   // Socket 모드로 Extra 에 넣어 둔 모델
+            public Transform scaledModel;        // 스케일을 뒤집어 둔 트랜스폼
         }
 
         private static readonly Dictionary<string, Entry> _entries = new Dictionary<string, Entry>(StringComparer.Ordinal);
 
-        public static void Set(string id, CharacterMainControl cmc, bool mirror, MirrorMode mode)
+        public static void Set(string id, CharacterMainControl cmc, bool mirror, MirrorMode senderMode)
         {
             Entry e;
             if (!_entries.TryGetValue(id, out e)) { e = new Entry(); _entries[id] = e; }
-            if (e.cmc == cmc && e.mirror == mirror && e.mode == mode) return;
+            if (e.cmc == cmc && e.mirror == mirror) return;
             Undo(e);
-            e.cmc = cmc; e.mirror = mirror; e.mode = mode;
+            e.cmc = cmc; e.mirror = mirror;
             Apply(e);
-            ModBehaviour.Log("coop remote '" + id + "' → " + (mirror ? "LEFT" : "RIGHT") + " (" + mode + ")");
+            ModBehaviour.Log("coop remote '" + id + "' → " + (mirror ? "LEFT" : "RIGHT") + " (sender mode " + senderMode + ", shown as Model)");
         }
 
         public static void Forget(string id)
@@ -279,8 +290,6 @@ namespace ShoulderTransition
         {
             foreach (var e in _entries.Values) Undo(e);
             _entries.Clear();
-            SocketMirrorPatch.ExtraModels.Clear();
-            SocketMirrorPatch.RemoveIfUnused();
         }
 
         /// <summary>모델이 재생성(장비 변경 등)되면 다시 적용, 캐릭터가 사라지면 정리</summary>
@@ -293,28 +302,17 @@ namespace ShoulderTransition
                 if (e.cmc == null) { Undo(e); _entries.Remove(id); continue; }
                 if (!e.mirror) continue;
                 var model = e.cmc.characterModel;
-                bool stale = e.mode == MirrorMode.Model ? (e.scaledModel == null || (model != null && e.scaledModel != model.transform))
-                                                       : (e.socketModel == null || e.socketModel != model);
-                if (stale) { Undo(e); Apply(e); }
+                if (model == null) continue;                       // 아직 모델 없음: 생기면 다음 프레임에 적용
+                if (e.scaledModel == null || e.scaledModel != model.transform) { Undo(e); Apply(e); }
             }
         }
 
         private static void Apply(Entry e)
         {
             if (!e.mirror || e.cmc == null || e.cmc.characterModel == null) return;
-            var model = e.cmc.characterModel;
-            if (e.mode == MirrorMode.Model)
-            {
-                var t = model.transform; var s = t.localScale;
-                if (s.x > 0f) { s.x = -s.x; t.localScale = s; }
-                e.scaledModel = t;
-            }
-            else
-            {
-                SocketMirrorPatch.ExtraModels.Add(model);
-                e.socketModel = model;
-                try { SocketMirrorPatch.Apply(); } catch (Exception ex) { ModBehaviour.Log("coop socket patch failed: " + ex.Message); }
-            }
+            var t = e.cmc.characterModel.transform; var s = t.localScale;
+            if (s.x > 0f) { s.x = -s.x; t.localScale = s; }
+            e.scaledModel = t;
         }
 
         private static void Undo(Entry e)
@@ -325,9 +323,6 @@ namespace ShoulderTransition
                 if (s.x < 0f) { s.x = -s.x; e.scaledModel.localScale = s; }
             }
             e.scaledModel = null;
-            if (e.socketModel != null) SocketMirrorPatch.ExtraModels.Remove(e.socketModel);
-            e.socketModel = null;
-            SocketMirrorPatch.RemoveIfUnused();
         }
     }
 }
